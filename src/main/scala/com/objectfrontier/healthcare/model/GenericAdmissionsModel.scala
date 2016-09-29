@@ -17,7 +17,7 @@ class AdmissionsModel extends CassandraTable[ConcreteAdmissionsModel, Admission]
   object patientId extends TimeUUIDColumn(this) with PartitionKey[UUID] { override lazy val name = "patient_id" }
   object admissionId extends IntColumn(this) { override lazy val name = "admission_id" }
   object admissionStartDate extends StringColumn(this) { override lazy val name = "admission_start_date" }
-  object admissionEndDate extends StringColumn(this) { override lazy val name = "patient_end_date" }
+  object admissionEndDate extends StringColumn(this) { override lazy val name = "admission_end_date" }
 
   override def fromRow(r: Row): Admission = Admission(patientId(r), admissionId(r), admissionStartDate(r), admissionEndDate(r))
 }

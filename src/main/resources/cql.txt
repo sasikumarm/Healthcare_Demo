@@ -6,8 +6,8 @@ CREATE TABLE admission (
   patient_id uuid,
   admission_id int,
   admission_start_date varchar,
-  patient_end_date varchar,
-  PRIMARY KEY (patient_id)
+  admission_end_date varchar,
+  PRIMARY KEY (patient_id,admission_id,admission_start_date,admission_end_date)
 );
 
 
