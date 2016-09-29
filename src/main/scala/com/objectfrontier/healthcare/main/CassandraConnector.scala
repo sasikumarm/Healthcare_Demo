@@ -2,8 +2,10 @@ package com.objectfrontier.healthcare.main
 
 import com.objectfrontier.healthcare.entity.Admission
 import com.objectfrontier.healthcare.entity.AdmissionDiagnose
+import com.objectfrontier.healthcare.entity.Lab
 import com.objectfrontier.healthcare.service.AdmissionService
 import com.objectfrontier.healthcare.service.AdmissionDiagnoseService
+import com.objectfrontier.healthcare.service.LabService
 import java.util.UUID
 import scala.io.Source
 import com.websudos.phantom.reactivestreams._
@@ -11,6 +13,9 @@ import com.websudos.phantom.reactivestreams._
 object CassandraConnecter {
   def main(args: Array[String]) {
 
+    var startTotTime = System.currentTimeMillis()
+    var totalRecords = 0
+    
     //AdmissionsCorePopulatedTable.txt File Reading
     var file = Source.fromFile("/home/ksaha/data/100-Patients/AdmissionsCorePopulatedTable.txt")
     var startTime = System.currentTimeMillis()
@@ -25,8 +30,10 @@ object CassandraConnecter {
       }
       i = i + 1
     }
+    
     var endTime = System.currentTimeMillis()
     var seconds = (endTime - startTime) / 1000;
+    totalRecords =i;
 
     println(" \n\t\t***************************")
     println(" \n\t\tTotal Admissions No of Records:" + i)
@@ -49,8 +56,10 @@ object CassandraConnecter {
       }
       i = i + 1
     }
+    
     endTime = System.currentTimeMillis()
     seconds = (endTime - startTime) / 1000;
+    totalRecords = totalRecords +i;
 
     println(" \n\t\t***************************")
     println(" \n\t\tTotal Admission Diagnose No of Records:" + i)
@@ -58,5 +67,39 @@ object CassandraConnecter {
     println(" \n\t\t***************************")
 
     file.close
+    
+    //LabsCorePopulatedTable.txt File Reading
+    file = Source.fromFile("/home/ksaha/data/100-Patients/LabsCorePopulatedTable.txt")
+    startTime = System.currentTimeMillis()
+    i = 0
+
+    for (line <- file.getLines.drop(1)) {
+      
+      var labList = line.split('\t')
+      
+      if(labList.length == 6){
+         LabService.saveOrUpdate(Lab(UUID.fromString(labList(0)), labList(1).toInt, labList(2), labList(3).toFloat,labList(4),labList(5)))
+      }
+      i = i + 1
+    }
+    endTime = System.currentTimeMillis()
+    seconds = (endTime - startTime) / 1000;
+    totalRecords = totalRecords +i;
+
+    println(" \n\t\t***************************")
+    println(" \n\t\tTotal Lab No of Records:" + i)
+    println(" \n\t\tTotal Time Taken:" + seconds + " seconds")
+    println(" \n\t\t***************************")
+
+    file.close
+    
+    var endTotTime = System.currentTimeMillis()
+    var totSeconds = (endTotTime - startTotTime) / 1000;
+    
+    println(" \n\t\t***************************")
+    println(" \n\t\tTotalNo of Records:" + totalRecords)
+    println(" \n\t\tTotal Time Taken:" + totSeconds + " seconds")
+    println(" \n\t\t***************************")
+    
   }
 }

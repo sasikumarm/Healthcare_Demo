@@ -1,13 +1,14 @@
 package com.objectfrontier.healthcare.database
 
 import com.objectfrontier.healthcare.connector.Connector._
-import com.objectfrontier.healthcare.model.{ ConcreteAdmissionModel,ConcreteAdmissionDiagnoseModel }
+import com.objectfrontier.healthcare.model.{ ConcreteAdmissionModel,ConcreteAdmissionDiagnoseModel,ConcreteLabModel }
 import com.websudos.phantom.db.DatabaseImpl
 import com.websudos.phantom.dsl._
 
 class PatientsDatabase(override val connector: KeySpaceDef) extends DatabaseImpl(connector) {
   object admissionModel extends ConcreteAdmissionModel with connector.Connector
   object admissionDiagnoseModel extends ConcreteAdmissionDiagnoseModel with connector.Connector
+  object labModel extends ConcreteLabModel with connector.Connector
 }
 
 

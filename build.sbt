@@ -1,4 +1,4 @@
-name := "cassandra-phantom"
+name := "healthcare_demo_ofs"
 
 version := "1.0"
 

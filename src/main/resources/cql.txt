@@ -21,6 +21,33 @@ CREATE TABLE admission_diagnose (
   PRIMARY KEY (patient_id,admission_id)
 );
 
+#LabsCorePopulatedTable
+
+CREATE TABLE lab (
+  patient_id uuid,
+  admission_id int,
+  lab_name varchar,
+  lab_value float,
+  lab_units varchar,
+  lab_date_time varchar,
+  PRIMARY KEY (patient_id,admission_id,lab_date_time)
+);
+
+
+#Check Tables Creation
+DESCRIBE TABLES;
+
+#Counts Checking
+SELECT COUNT(*) FROM admission;
+SELECT COUNT(*) FROM admission_diagnose;
+SELECT COUNT(*) FROM lab;
+
+
+#Data Cleanup
+TRUNCATE admission;
+TRUNCATE admission_diagnose;
+TRUNCATE lab;
+
 cd /usr/local/apache-cassandra-3.7/ 
 ./bin/cassandra
 ./bin/nodetool status

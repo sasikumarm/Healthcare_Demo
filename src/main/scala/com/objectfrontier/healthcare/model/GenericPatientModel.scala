@@ -7,6 +7,7 @@ import com.websudos.phantom.dsl._
 import scala.concurrent.Future
 import com.objectfrontier.healthcare.entity.Admission
 import com.objectfrontier.healthcare.entity.AdmissionDiagnose
+import com.objectfrontier.healthcare.entity.Lab
 
 /**
  * Create the Cassandra representation of the Admission table
@@ -53,7 +54,7 @@ abstract class ConcreteAdmissionModel extends AdmissionModel with RootConnector 
   }
 }
   
-  /**
+/**
  * Create the Cassandra representation of the Admission Diagnose table
  */
 class AdmissionDiagnoseModel extends CassandraTable[ConcreteAdmissionDiagnoseModel, AdmissionDiagnose] {
@@ -97,4 +98,54 @@ abstract class ConcreteAdmissionDiagnoseModel extends AdmissionDiagnoseModel wit
       .future()
   }
 }
+
+/**
+ * Create the Cassandra representation of the Lab table
+ */
+class LabModel extends CassandraTable[ConcreteLabModel, Lab] {
+
+  override def tableName: String = "lab"
+
+  object patientId extends TimeUUIDColumn(this) with PartitionKey[UUID] { override lazy val name = "patient_id" }
+  object admissionId extends IntColumn(this) { override lazy val name = "admission_id" }
+  object labName extends StringColumn(this) { override lazy val name = "lab_name" }
+  object labValue extends FloatColumn(this) { override lazy val name = "lab_value" }
+  object labUnits extends StringColumn(this) { override lazy val name = "lab_units" }
+  object labDateTime extends StringColumn(this) { override lazy val name = "lab_date_time" }
+
+  override def fromRow(r: Row): Lab = Lab(patientId(r), admissionId(r), labName(r), labValue(r),labUnits(r), labDateTime(r))
+}
+
+/**
+ * Define the available methods for this model
+ */
+abstract class ConcreteLabModel extends LabModel with RootConnector {
+  
+  def getByLabByPatientId(patientId: UUID): Future[Option[Lab]] = {
+    select
+      .where(_.patientId eqs patientId)
+      .consistencyLevel_=(ConsistencyLevel.ONE)
+      .one()
+  }
+
+  def store(lab: Lab): Future[ResultSet] = {
+    insert
+      .value(_.patientId, lab.patientId)
+      .value(_.admissionId, lab.admissionId)
+      .value(_.labName, lab.labName)
+      .value(_.labValue, lab.labValue)
+      .value(_.labUnits, lab.labUnits)
+      .value(_.labDateTime, lab.labDateTime)
+      .consistencyLevel_=(ConsistencyLevel.ONE)
+      .future()
+  }
+  
+  def deleteByPatientId(patientId: UUID): Future[ResultSet] = {
+    delete
+      .where(_.patientId eqs patientId)
+      .consistencyLevel_=(ConsistencyLevel.ONE)
+      .future()
+  }
+}
+
 

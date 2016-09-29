@@ -2,9 +2,11 @@ package com.objectfrontier.healthcare.entity
 
 import java.util.UUID
 
-case class Admission(
+case class Lab(
   patientId: UUID,
   admissionId: Int,
-  admissionStartDate: String,
-  admissionEndDate: String
+  labName: String,
+  labValue: Float,
+  labUnits: String,
+  labDateTime: String
 )
