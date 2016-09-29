@@ -1,0 +1,18 @@
+CREATE KEYSPACE healthcare
+  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
+
+
+CREATE TABLE admission (
+  patient_id uuid,
+  admission_id int,
+  admission_start_date varchar,
+  patient_end_date varchar,
+  PRIMARY KEY (patient_id)
+);
+
+
+
+cd /usr/local/apache-cassandra-3.7/ 
+./bin/cassandra
+./bin/nodetool status
+./bin/cqlsh 10.10.40.172
