@@ -1,6 +1,7 @@
 CREATE KEYSPACE healthcare
   WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
 
+#AdmissionsCorePopulatedTable
 
 CREATE TABLE admission (
   patient_id uuid,
@@ -10,7 +11,15 @@ CREATE TABLE admission (
   PRIMARY KEY (patient_id,admission_id,admission_start_date,admission_end_date)
 );
 
+#AdmissionsDiagnosesCorePopulatedTable
 
+CREATE TABLE admission_diagnose (
+  patient_id uuid,
+  admission_id int,
+  primary_diagnosis_code varchar,
+  primary_diagnosis_description varchar,
+  PRIMARY KEY (patient_id,admission_id)
+);
 
 cd /usr/local/apache-cassandra-3.7/ 
 ./bin/cassandra

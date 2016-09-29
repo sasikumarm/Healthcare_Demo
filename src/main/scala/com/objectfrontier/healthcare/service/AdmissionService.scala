@@ -7,23 +7,23 @@ import com.websudos.phantom.dsl._
 import scala.concurrent.Future
 
 
-trait AdmissionsService extends PatientDatabase {
+trait AdmissionService extends PatientDatabase {
   
   def getByAdmissionByPatientId(id: UUID): Future[Option[Admission]] = {
-    database.admissionsModel.getByAdmissionByPatientId(id)
+    database.admissionModel.getByAdmissionByPatientId(id)
   }
 
   def saveOrUpdate(admission: Admission): Future[ResultSet] = {
     for {
-      byId <- database.admissionsModel.store(admission)
+      byId <- database.admissionModel.store(admission)
     } yield byId
   }
   
   def delete(admission: Admission): Future[ResultSet] = {
     for {
-      byId <- database.admissionsModel.deleteByPatientId(admission.patientId)
+      byId <- database.admissionModel.deleteByPatientId(admission.patientId)
     } yield byId
   }
 }
 
-object AdmissionsService extends AdmissionsService with PatientDatabase
+object AdmissionService extends AdmissionService with PatientDatabase
