@@ -8,6 +8,7 @@ import scala.concurrent.Future
 import com.objectfrontier.healthcare.entity.Admission
 import com.objectfrontier.healthcare.entity.AdmissionDiagnose
 import com.objectfrontier.healthcare.entity.Lab
+import com.objectfrontier.healthcare.entity.Patient
 
 /**
  * Create the Cassandra representation of the Admission table
@@ -136,6 +137,57 @@ abstract class ConcreteLabModel extends LabModel with RootConnector {
       .value(_.labValue, lab.labValue)
       .value(_.labUnits, lab.labUnits)
       .value(_.labDateTime, lab.labDateTime)
+      .consistencyLevel_=(ConsistencyLevel.ONE)
+      .future()
+  }
+  
+  def deleteByPatientId(patientId: UUID): Future[ResultSet] = {
+    delete
+      .where(_.patientId eqs patientId)
+      .consistencyLevel_=(ConsistencyLevel.ONE)
+      .future()
+  }
+}
+
+/**
+ * Create the Cassandra representation of the Patient table
+ */
+class PatientModel extends CassandraTable[ConcretePatientModel, Patient] {
+
+  override def tableName: String = "patient"
+
+  object patientId extends TimeUUIDColumn(this) with PartitionKey[UUID] { override lazy val name = "patient_id" }
+  object patientGender extends StringColumn(this) { override lazy val name = "patient_gender" }
+  object patientDateOfBirth extends StringColumn(this) { override lazy val name = "patient_dateofbirth" }
+  object patientRace extends StringColumn(this) { override lazy val name = "patient_race" }
+  object patientMaritalStatus extends StringColumn(this) { override lazy val name = "patient_marital_status" }
+  object patientLanguage extends StringColumn(this) { override lazy val name = "patient_language" }
+  object patientPopulationPercentageBelowPoverty extends FloatColumn(this) { override lazy val name = "patient_population_percentage_below_poverty" }
+
+  override def fromRow(r: Row): Patient = Patient(patientId(r), patientGender(r), patientDateOfBirth(r), patientRace(r),patientMaritalStatus(r), patientLanguage(r),patientPopulationPercentageBelowPoverty(r))
+}
+
+/**
+ * Define the available methods for this model
+ */
+abstract class ConcretePatientModel extends PatientModel with RootConnector {
+  
+  def getByPatientByPatientId(patientId: UUID): Future[Option[Patient]] = {
+    select
+      .where(_.patientId eqs patientId)
+      .consistencyLevel_=(ConsistencyLevel.ONE)
+      .one()
+  }
+
+  def store(patient: Patient): Future[ResultSet] = {
+    insert
+      .value(_.patientId, patient.patientId)
+      .value(_.patientGender, patient.patientGender)
+      .value(_.patientDateOfBirth, patient.patientDateOfBirth)
+      .value(_.patientRace, patient.patientRace)
+      .value(_.patientMaritalStatus, patient.patientMaritalStatus)
+      .value(_.patientLanguage, patient.patientLanguage)
+      .value(_.patientPopulationPercentageBelowPoverty, patient.patientPopulationPercentageBelowPoverty)
       .consistencyLevel_=(ConsistencyLevel.ONE)
       .future()
   }

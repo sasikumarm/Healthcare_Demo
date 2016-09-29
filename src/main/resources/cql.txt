@@ -33,6 +33,19 @@ CREATE TABLE lab (
   PRIMARY KEY (patient_id,admission_id,lab_date_time)
 );
 
+#PatientCorePopulatedTable
+
+CREATE TABLE patient (
+  patient_id uuid,
+  patient_gender varchar,
+  patient_dateofbirth varchar,
+  patient_race varchar,
+  patient_marital_status varchar,
+  patient_language varchar,
+  patient_population_percentage_below_poverty float,
+  PRIMARY KEY (patient_id)
+);
+
 
 #Check Tables Creation
 DESCRIBE TABLES;
@@ -41,12 +54,14 @@ DESCRIBE TABLES;
 SELECT COUNT(*) FROM admission;
 SELECT COUNT(*) FROM admission_diagnose;
 SELECT COUNT(*) FROM lab;
+SELECT COUNT(*) FROM patient;
 
 
 #Data Cleanup
 TRUNCATE admission;
 TRUNCATE admission_diagnose;
 TRUNCATE lab;
+TRUNCATE patient;
 
 cd /usr/local/apache-cassandra-3.7/ 
 ./bin/cassandra

@@ -1,7 +1,7 @@
 package com.objectfrontier.healthcare.database
 
 import com.objectfrontier.healthcare.connector.Connector._
-import com.objectfrontier.healthcare.model.{ ConcreteAdmissionModel,ConcreteAdmissionDiagnoseModel,ConcreteLabModel }
+import com.objectfrontier.healthcare.model.{ ConcreteAdmissionModel,ConcreteAdmissionDiagnoseModel,ConcreteLabModel,ConcretePatientModel }
 import com.websudos.phantom.db.DatabaseImpl
 import com.websudos.phantom.dsl._
 
@@ -9,6 +9,7 @@ class PatientsDatabase(override val connector: KeySpaceDef) extends DatabaseImpl
   object admissionModel extends ConcreteAdmissionModel with connector.Connector
   object admissionDiagnoseModel extends ConcreteAdmissionDiagnoseModel with connector.Connector
   object labModel extends ConcreteLabModel with connector.Connector
+  object patientModel extends ConcretePatientModel with connector.Connector
 }
 
 
