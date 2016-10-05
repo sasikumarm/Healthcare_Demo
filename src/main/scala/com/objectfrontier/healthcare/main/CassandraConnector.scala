@@ -9,29 +9,31 @@ import com.objectfrontier.healthcare.service.AdmissionDiagnoseService
 import com.objectfrontier.healthcare.service.LabService
 import com.objectfrontier.healthcare.service.PatientService
 import java.util.UUID
+import java.io.File
 import scala.io.Source
 import com.websudos.phantom.reactivestreams._
+import com.typesafe.config.ConfigFactory
 
 object CassandraConnecter {
   def main(args: Array[String]) {
+    
+    val config = ConfigFactory.load()
+    val dataFilesPath = config.getString("data_files_path")
 
     var startTime = System.currentTimeMillis()
     
-    insertRecords("/home/ksaha/data/100-Patients/AdmissionsCorePopulatedTable.txt","Admission")
+    for (file <- new File(dataFilesPath).listFiles) {
+      insertRecords(file.getAbsolutePath,file.getName)
+    }
     
-    insertRecords("/home/ksaha/data/100-Patients/AdmissionsDiagnosesCorePopulatedTable.txt","AdmissionDiagnoses")
-    
-    insertRecords("/home/ksaha/data/100-Patients/LabsCorePopulatedTable.txt","Lab")
-    
-    insertRecords("/home/ksaha/data/100-Patients/PatientCorePopulatedTable.txt","Patient")
-
-   
     println(" \n\t\tTotal Time Taken:" + (System.currentTimeMillis() - startTime) / 1000 + " seconds")
+    
+    System.exit(0)
     
   }
   
- def insertRecords(fileName: String,model: String): Boolean = {
-    var file = Source.fromFile(fileName)
+ def insertRecords(fileAbsolutePath: String,fileName: String): Boolean = {
+    var file = Source.fromFile(fileAbsolutePath)
     
     var startTime = System.currentTimeMillis()
     var i = 0
@@ -40,25 +42,25 @@ object CassandraConnecter {
       
       var columnsList = line.split('\t')
       
-      if(model == "Admission"){
+      if(fileName == "AdmissionsCorePopulatedTable.txt") {
         
         if(columnsList.length == 4){
            AdmissionService.saveOrUpdate(Admission(UUID.fromString(columnsList(0)), columnsList(1).toInt, columnsList(2), columnsList(3)))
         }
         
-      } else  if(model == "AdmissionDiagnoses"){
+      } else  if(fileName == "AdmissionsDiagnosesCorePopulatedTable.txt") {
         
         if(columnsList.length == 4){
            AdmissionDiagnoseService.saveOrUpdate(AdmissionDiagnose(UUID.fromString(columnsList(0)), columnsList(1).toInt, columnsList(2), columnsList(3)))
         }
         
-      } else  if(model == "Lab"){
+      } else  if(fileName == "LabsCorePopulatedTable.txt") {
       
         if(columnsList.length == 6){
            LabService.saveOrUpdate(Lab(UUID.fromString(columnsList(0)), columnsList(1).toInt, columnsList(2), columnsList(3).toFloat,columnsList(4),columnsList(5)))
         }
         
-      } else  if(model == "Patient"){
+      } else  if(fileName == "PatientCorePopulatedTable.txt") {
       
         if(columnsList.length == 7){
            PatientService.saveOrUpdate(Patient(UUID.fromString(columnsList(0)), columnsList(1), columnsList(2), columnsList(3),columnsList(4),columnsList(5),columnsList(6).toFloat))
@@ -72,7 +74,7 @@ object CassandraConnecter {
     var seconds = (endTime - startTime) / 1000;
 
     println(" \n\t\t***************************")
-    println(" \n\t\tTotal "+ model+" No of Records:" + i)
+    println(" \n\t\tTotal "+ fileName+" No of Records:" + i)
     println(" \n\t\tTotal Time Taken:" + seconds + " seconds")
     println(" \n\t\t***************************")
 
